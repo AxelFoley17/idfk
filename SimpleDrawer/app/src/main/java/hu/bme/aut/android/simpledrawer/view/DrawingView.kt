@@ -100,4 +100,10 @@ class DrawingView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         )
     }
 
+    fun restoreObjects(points: MutableList<Point>?, lines: MutableList<Line>?) {
+        points?.also { this.points = it }
+        lines?.also { this.lines = it }
+        invalidate()
+    }
+
 }

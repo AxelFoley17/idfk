@@ -5,18 +5,52 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.SubMenu
+import androidx.appcompat.app.AlertDialog
 import hu.bme.aut.android.simpledrawer.databinding.ActivityDrawingBinding
+import hu.bme.aut.android.simpledrawer.sqlite.PersistentDataHelper
 import hu.bme.aut.android.simpledrawer.view.DrawingView
 
 class DrawingActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDrawingBinding
+    private lateinit var dataHelper: PersistentDataHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDrawingBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        dataHelper = PersistentDataHelper(this)
+        dataHelper.open()
+        restorePersistedObjects()
     }
 
+    override fun onResume() {
+        super.onResume()
+        dataHelper.open()
+    }
+
+    override fun onPause() {
+        dataHelper.close()
+        super.onPause()
+    }
+
+    private fun restorePersistedObjects() {
+        binding.canvas.restoreObjects(dataHelper.restorePoints(), dataHelper.restoreLines())
+    }
+
+    override fun onBackPressed() {
+        AlertDialog.Builder(this)
+            .setMessage(R.string.are_you_sure_want_to_exit)
+            .setPositiveButton(R.string.ok) { _, _ -> onExit() }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun onExit() {
+        dataHelper.persistPoints(binding.canvas.points)
+        dataHelper.persistLines(binding.canvas.lines)
+        dataHelper.close()
+        finish()
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {

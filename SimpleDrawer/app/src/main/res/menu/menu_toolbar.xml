@@ -20,4 +20,11 @@
             </group>
         </menu>
     </item>
+    <item
+        android:id="@+id/delete"
+        android:icon="@drawable/ic_clear_canvas"
+        android:title="@string/delete"
+        app:showAsAction="ifRoom">
+
+    </item>
 </menu>
